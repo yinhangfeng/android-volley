@@ -99,6 +99,7 @@ public class NetworkImageView extends ImageView {
     /**
      * Loads the image for the view if it isn't already loaded.
      * @param isInLayoutPass True if this was invoked from a layout pass, false otherwise.
+     * 请求的url与当前图片相同时不处理 不同时取消原来的请求
      */
     void loadImageIfNecessary(final boolean isInLayoutPass) {
         int width = getWidth();
@@ -132,6 +133,7 @@ public class NetworkImageView extends ImageView {
         if (mImageContainer != null && mImageContainer.getRequestUrl() != null) {
             if (mImageContainer.getRequestUrl().equals(mUrl)) {
                 // if the request is from the same URL, return.
+            	//要请求的url与当前图片的相同
                 return;
             } else {
                 // if there is a pre-existing request, cancel it if it's fetching a different URL.

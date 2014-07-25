@@ -30,6 +30,8 @@ import android.graphics.BitmapFactory;
 /**
  * A canned request for getting an image at a given URL and calling
  * back with a decoded Bitmap.
+ * 没有内存缓存 所有请求decode过程同步(sDecodeLock)
+ * 使用RequestQueue 意味着 有缓存时先将缓存读取到内存byte[] 加解析成Bitmap
  */
 public class ImageRequest extends Request<Bitmap> {
     /** Socket timeout in milliseconds for image requests */

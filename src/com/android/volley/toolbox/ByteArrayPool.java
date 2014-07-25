@@ -87,6 +87,7 @@ public class ByteArrayPool {
      * @param len the minimum size, in bytes, of the requested buffer. The returned buffer may be
      *        larger.
      * @return a byte[] buffer is always returned.
+     * O = 3n
      */
     public synchronized byte[] getBuf(int len) {
         for (int i = 0; i < mBuffersBySize.size(); i++) {
@@ -106,11 +107,13 @@ public class ByteArrayPool {
      * size.
      *
      * @param buf the buffer to return to the pool.
+     * O = lgn + 3n
      */
     public synchronized void returnBuf(byte[] buf) {
         if (buf == null || buf.length > mSizeLimit) {
             return;
         }
+        //不如从后向前 按简单插入排序方式
         mBuffersByLastUse.add(buf);
         int pos = Collections.binarySearch(mBuffersBySize, buf, BUF_COMPARATOR);
         if (pos < 0) {

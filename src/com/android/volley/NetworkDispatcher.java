@@ -118,6 +118,7 @@ public class NetworkDispatcher extends Thread {
                 }
 
                 // Parse the response here on the worker thread.
+                //解析成对应的Response 包括Cache.Entry构建(如果不需要request.shouldCache()存缓存就白做了)
                 Response<?> response = request.parseNetworkResponse(networkResponse);
                 request.addMarker("network-parse-complete");
 

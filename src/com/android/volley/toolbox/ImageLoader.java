@@ -39,6 +39,22 @@ import java.util.LinkedList;
  * {@link ImageLoader#getImageListener(ImageView, int, int)}. Note that all function calls to
  * this class must be made from the main thead, and all responses will be delivered to the main
  * thread as well.
+ * 由NetworkImageView ImageLoader ImageRequest RequestQueue组成图片加载体系
+ * 图片加载一般要求:
+ * url:图片的url chcheKey:如 1280x720 + url (大小在前防止出错)
+ * 1.ImageView 释放后加载过程应取消
+ * 2.对同一个ImageView的正在进行的图片请求队列如[A,B,C,C,C]，只保留第一个C其他应该取消(这里的ABC应该比较cacheKey即url与大小的组合)
+ * 3.相同的url的图片网络请求不能并发，同时只能有一个
+ * 4.相同cacheKey(url肯定相等) decode不能并发,不同cacheKey decode最好可并发
+ * 5.如果已存在大规格的Bitmap 小图片可以从大Bitmap scale得到，防止重复IO
+ * 
+ * 对于本ImageLoader:
+ * ImageRequest执行cancel时 只在图片开始加载与加载完成时进行了是否已取消的判断，图片下载完成和图片decode之间没有判断
+ * 1.NetworkImageView 可在图片已经确定大小的时候才加载。加载过程在ImageView中,匿名内部类可能引起内存泄漏阻止ImageView的释放
+ * 2.NetworkImageView能做到
+ * 3.ImageRequest.shouldCache 所以相同url会加入mWaitingRequests防止并发执行
+ * 4.相同url不可并发所以可做到，但不同cacheKey decode最好可并发 就不行了
+ * 5.无法做到
  */
 public class ImageLoader {
     /** RequestQueue for dispatching ImageRequests onto. */
@@ -182,6 +198,8 @@ public class ImageLoader {
      * @param maxHeight The maximum height of the returned image.
      * @return A container object that contains all of the properties of the request, as well as
      *     the currently available image (default if remote is not loaded).
+     *     对有相同正在请求的cacheKey的 第一个请求完成后批处理
+     *     对相同url同时请求的情况 由于ImageRequest.shouldCache 所以相同url会加入mWaitingRequests防止并发执行
      */
     public ImageContainer get(String requestUrl, ImageListener imageListener,
             int maxWidth, int maxHeight) {
@@ -444,6 +462,7 @@ public class ImageLoader {
                             if (container.mListener == null) {
                                 continue;
                             }
+                            //由相同cacheKey的图片 第一个请求失败 等待请求的其他图片也失败
                             if (bir.getError() == null) {
                                 container.mBitmap = bir.mResponseBitmap;
                                 container.mListener.onResponse(container, false);

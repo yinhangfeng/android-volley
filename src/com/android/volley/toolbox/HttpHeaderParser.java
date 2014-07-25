@@ -27,6 +27,8 @@ import java.util.Map;
 
 /**
  * Utility methods for parsing HTTP headers.
+ * 将响应结果的header body 包装成Cache.Entry 以便放到DiskBasedCache
+ * 在NetworkDispatcher中不论是否需要cache都会调用parseCacheHeaders
  */
 public class HttpHeaderParser {
 

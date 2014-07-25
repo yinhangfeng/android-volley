@@ -266,7 +266,7 @@ public class RequestQueue {
         synchronized (mCurrentRequests) {
             mCurrentRequests.remove(request);
         }
-
+        //如果一个Request在请求过程中被setShouldCache可能出问题
         if (request.shouldCache()) {
             synchronized (mWaitingRequests) {
                 String cacheKey = request.getCacheKey();
@@ -278,6 +278,7 @@ public class RequestQueue {
                     }
                     // Process all queued up requests. They won't be considered as in flight, but
                     // that's not a problem as the cache has been primed by 'request'.
+                    //如果上一个任务执行没有成功可能出问题
                     mCacheQueue.addAll(waitingRequests);
                 }
             }

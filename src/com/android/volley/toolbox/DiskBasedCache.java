@@ -38,6 +38,7 @@ import java.util.Map;
 /**
  * Cache implementation that caches files directly onto the hard disk in the specified
  * directory. The default disk usage size is 5MB, but is configurable.
+ * 文件缓存的有效性依赖于服务器有无设置完整的(max-age,Expires等)响应header(对于ImageLoader可能有问题)
  */
 public class DiskBasedCache implements Cache {
 

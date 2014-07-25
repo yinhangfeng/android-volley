@@ -68,9 +68,6 @@ public abstract class Request<T> implements Comparable<Request<T>> {
 
     /** URL of this request. */
     private final String mUrl;
-    
-    /** The redirect url to use for 3xx http responses */
-    private String mRedirectUrl;
 
     /** Default tag for {@link TrafficStats}. */
     private final int mDefaultTrafficStatsTag;
@@ -280,21 +277,7 @@ public abstract class Request<T> implements Comparable<Request<T>> {
      * Returns the URL of this request.
      */
     public String getUrl() {
-        return (mRedirectUrl != null) ? mRedirectUrl : mUrl;
-    }
-    
-    /**
-     * Returns the URL of the request before any redirects have occurred.
-     */
-    public String getOriginUrl() {
-    	return mUrl;
-    }
-    
-    /**
-     * Sets the redirect url to handle 3xx http responses.
-     */
-    public void setRedirectUrl(String redirectUrl) {
-    	mRedirectUrl = redirectUrl;
+        return mUrl;
     }
 
     /**
